@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openmath-agents"
+version = "0.1.0"
+description = "LangGraph-based multi-agent system for mathematical reasoning"
+requires-python = ">=3.11"
+
+dependencies = [
+    "langgraph>=0.3.0",            # 에이전트 그래프 프레임워크
+    "langgraph-supervisor>=0.0.1", # 멀티에이전트 감독자 패턴
+    "langchain-openai>=0.2.0",     # OpenAI LLM 연동
+    "langchain-core>=0.3.0",       # LangChain 핵심
+    "sympy>=1.13.0",               # 수학 기호연산 엔진
+    "langsmith>=0.2.0",            # 실험 추적·모니터링
+    "pydantic>=2.0",               # 입력 검증 스키마
+    "pytest>=8.0",                 # 테스트 러너
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
