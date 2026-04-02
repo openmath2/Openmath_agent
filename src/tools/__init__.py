@@ -1,17 +1,15 @@
 from .sympy_tools import (
-    solve_equation,
-    simplify_expression,
-    compute_derivative,
-    compute_integral,
-    verify_equality,
+    sympy_solve,
+    sympy_simplify,
+    sympy_verify,
+    sympy_differentiate,
     SYMPY_TOOLS,
 )
 
 __all__ = [
-    "solve_equation",
-    "simplify_expression",
-    "compute_derivative",
-    "compute_integral",
-    "verify_equality",
+    "sympy_solve",
+    "sympy_simplify",
+    "sympy_verify",
+    "sympy_differentiate",
     "SYMPY_TOOLS",
 ]

@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph
 from typing import TypedDict
 
-from src.tools import verify_equality  # type: ignore[import]
+from src.tools import sympy_verify  # type: ignore[import]
 
 
 VERIFIER_PROMPT = """\

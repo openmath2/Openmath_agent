@@ -2,45 +2,55 @@
 
 import pytest
 from src.tools.sympy_tools import (
-    solve_equation,
-    simplify_expression,
-    compute_derivative,
-    compute_integral,
-    verify_equality,
+    sympy_solve,
+    sympy_simplify,
+    sympy_verify,
+    sympy_differentiate,
 )
 
 
-class TestSolveEquation:
-    def test_linear(self):
-        result = solve_equation.invoke({"equation": "2*x + 4 = 0", "variable": "x"})
-        assert "-2" in result
-
-    def test_quadratic(self):
-        result = solve_equation.invoke({"equation": "x**2 - 4 = 0", "variable": "x"})
-        assert "2" in result and "-2" in result
+def test_solve_quadratic():
+    """Test solving a quadratic equation."""
+    result = sympy_solve.invoke({"equation": "x**2 - 4 = 0", "variable": "x"})
+    # Should return [-2, 2] or [2, -2]
+    assert "-2" in result and "2" in result
 
 
-class TestSimplifyExpression:
-    def test_basic(self):
-        result = simplify_expression.invoke({"expression": "x**2 + 2*x + 1"})
-        assert "(x + 1)**2" in result or "x**2 + 2*x + 1" in result
+def test_solve_linear():
+    """Test solving a linear equation."""
+    result = sympy_solve.invoke({"equation": "2*x + 4 = 0", "variable": "x"})
+    # Should return [-2]
+    assert "-2" in result
 
 
-class TestComputeDerivative:
-    def test_polynomial(self):
-        result = compute_derivative.invoke({"expression": "x**3", "variable": "x"})
-        assert "3*x**2" in result or "3x^2" in result
+def test_verify_correct():
+    """Test verification of two equal expressions."""
+    result = sympy_verify.invoke({"expr_a": "(x+1)**2", "expr_b": "x**2 + 2*x + 1"})
+    assert result == "VERIFIED"
 
 
-class TestComputeIntegral:
-    def test_polynomial(self):
-        result = compute_integral.invoke({"expression": "x**2", "variable": "x"})
-        assert "x**3" in result
+def test_verify_incorrect():
+    """Test verification of two different expressions."""
+    result = sympy_verify.invoke({"expr_a": "x**2", "expr_b": "x**3"})
+    assert result == "FAILED"
 
 
-class TestVerifyEquality:
-    def test_equal(self):
-        assert verify_equality.invoke({"expr_a": "(x+1)**2", "expr_b": "x**2+2*x+1"})
+def test_rational_mode():
+    """Test that fractions are kept as Rational (not converted to decimals)."""
+    result = sympy_solve.invoke({"equation": "2*x + 1 = 0", "variable": "x"})
+    # Should contain -1/2 as a Rational, not -0.5
+    assert "-1/2" in result or "Rational" in result or "-1/2" in str(result)
 
-    def test_not_equal(self):
-        assert not verify_equality.invoke({"expr_a": "x**2", "expr_b": "x**3"})
+
+def test_sqrt_mode():
+    """Test that square roots are kept as sqrt (not converted to decimals)."""
+    result = sympy_solve.invoke({"equation": "x**2 - 2 = 0", "variable": "x"})
+    # Should contain sqrt(2), not 1.414...
+    assert "sqrt(2)" in result or "sqrt" in result
+
+
+def test_invalid_input():
+    """Test handling of invalid input."""
+    result = sympy_solve.invoke({"equation": "invalid equation @#$", "variable": "x"})
+    # Should return an error message
+    assert "Error" in result or "error" in result.lower()

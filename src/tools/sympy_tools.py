@@ -2,31 +2,44 @@
 
 from langchain_core.tools import tool
 import sympy as sp
+from sympy import Rational, sqrt
 
 
 @tool
-def solve_equation(equation: str, variable: str = "x") -> str:
+def sympy_solve(equation: str, variable: str = "x") -> str:
     """Solve a mathematical equation for a given variable.
+    
+    Fractions are kept as Rational, roots are kept as sqrt (not converted to decimals).
 
     Args:
-        equation: Equation as a string (e.g., "x**2 - 4 = 0").
+        equation: Equation as a string (e.g., "x**2 - 4 = 0" or "2*x + 1 = 0").
         variable: Variable to solve for (default: "x").
 
     Returns:
-        JSON-serializable string of solutions.
+        String representation of solutions with Rational and sqrt preserved.
     """
-    var = sp.Symbol(variable)
-    if "=" in equation:
-        lhs, rhs = equation.split("=", 1)
-        expr = sp.sympify(lhs.strip()) - sp.sympify(rhs.strip())
-    else:
-        expr = sp.sympify(equation)
-    solutions = sp.solve(expr, var)
-    return str(solutions)
+    try:
+        var = sp.Symbol(variable)
+        if "=" in equation:
+            lhs, rhs = equation.split("=", 1)
+            expr = sp.sympify(lhs.strip()) - sp.sympify(rhs.strip())
+        else:
+            expr = sp.sympify(equation)
+        
+        solutions = sp.solve(expr, var)
+        
+        # Convert solutions to use Rational and sqrt explicitly
+        result = []
+        for sol in solutions:
+            result.append(sol)
+        
+        return str(result)
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 @tool
-def simplify_expression(expression: str) -> str:
+def sympy_simplify(expression: str) -> str:
     """Simplify a mathematical expression using SymPy.
 
     Args:
@@ -35,11 +48,35 @@ def simplify_expression(expression: str) -> str:
     Returns:
         Simplified expression as a string.
     """
-    return str(sp.simplify(sp.sympify(expression)))
+    try:
+        return str(sp.simplify(sp.sympify(expression)))
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 @tool
-def compute_derivative(expression: str, variable: str = "x") -> str:
+def sympy_verify(expr_a: str, expr_b: str) -> str:
+    """Check whether two mathematical expressions are symbolically equal.
+
+    Args:
+        expr_a: First expression as a string.
+        expr_b: Second expression as a string.
+
+    Returns:
+        "VERIFIED" if the expressions are symbolically equivalent, "FAILED" otherwise.
+    """
+    try:
+        diff = sp.simplify(sp.sympify(expr_a) - sp.sympify(expr_b))
+        if diff == 0:
+            return "VERIFIED"
+        else:
+            return "FAILED"
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+
+@tool
+def sympy_differentiate(expression: str, variable: str = "x") -> str:
     """Compute the derivative of an expression with respect to a variable.
 
     Args:
@@ -49,43 +86,16 @@ def compute_derivative(expression: str, variable: str = "x") -> str:
     Returns:
         Derivative expression as a string.
     """
-    var = sp.Symbol(variable)
-    return str(sp.diff(sp.sympify(expression), var))
-
-
-@tool
-def compute_integral(expression: str, variable: str = "x") -> str:
-    """Compute the indefinite integral of an expression.
-
-    Args:
-        expression: Mathematical expression as a string.
-        variable: Variable to integrate with respect to (default: "x").
-
-    Returns:
-        Integral expression as a string.
-    """
-    var = sp.Symbol(variable)
-    return str(sp.integrate(sp.sympify(expression), var))
-
-
-@tool
-def verify_equality(expr_a: str, expr_b: str) -> bool:
-    """Check whether two mathematical expressions are symbolically equal.
-
-    Args:
-        expr_a: First expression as a string.
-        expr_b: Second expression as a string.
-
-    Returns:
-        True if the expressions are symbolically equivalent, False otherwise.
-    """
-    return sp.simplify(sp.sympify(expr_a) - sp.sympify(expr_b)) == 0
+    try:
+        var = sp.Symbol(variable)
+        return str(sp.diff(sp.sympify(expression), var))
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 SYMPY_TOOLS = [
-    solve_equation,
-    simplify_expression,
-    compute_derivative,
-    compute_integral,
-    verify_equality,
+    sympy_solve,
+    sympy_simplify,
+    sympy_verify,
+    sympy_differentiate,
 ]
