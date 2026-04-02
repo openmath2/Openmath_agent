@@ -1,0 +1,68 @@
+{
+  "react_results": [
+    {
+      "id": "ms_001",
+      "problem": "이차방정식 x^2 - 5x + 6 = 0을 풀어라.",
+      "expected_answer": "[2, 3]",
+      "response": "ERROR: Error code: 401 - {'error': {'message': 'Incorrect API key provided: dummy-no**used. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}",
+      "time_ms": 0,
+      "time_sec": 0
+    },
+    {
+      "id": "ms_002",
+      "problem": "이차방정식 x^2 + 4x + 4 = 0의 해를 구하시오.",
+      "expected_answer": "[-2]",
+      "response": "ERROR: Error code: 401 - {'error': {'message': 'Incorrect API key provided: dummy-no**used. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}",
+      "time_ms": 0,
+      "time_sec": 0
+    },
+    {
+      "id": "ms_003",
+      "problem": "이차방정식 2x^2 - 8 = 0을 풀어라.",
+      "expected_answer": "[-2, 2]",
+      "response": "ERROR: Error code: 401 - {'error': {'message': 'Incorrect API key provided: dummy-no**used. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}",
+      "time_ms": 0,
+      "time_sec": 0
+    }
+  ],
+  "multi_agent_results": [
+    {
+      "id": "ms_001",
+      "problem": "이차방정식 x^2 - 5x + 6 = 0을 풀어라.",
+      "expected_answer": "[2, 3]",
+      "solution": "",
+      "verdict": "ERROR",
+      "justification": "'HumanMessage' object is not subscriptable",
+      "response": "ERROR: 'HumanMessage' object is not subscriptable",
+      "time_ms": 0,
+      "time_sec": 0
+    },
+    {
+      "id": "ms_002",
+      "problem": "이차방정식 x^2 + 4x + 4 = 0의 해를 구하시오.",
+      "expected_answer": "[-2]",
+      "solution": "",
+      "verdict": "ERROR",
+      "justification": "'HumanMessage' object is not subscriptable",
+      "response": "ERROR: 'HumanMessage' object is not subscriptable",
+      "time_ms": 0,
+      "time_sec": 0
+    },
+    {
+      "id": "ms_003",
+      "problem": "이차방정식 2x^2 - 8 = 0을 풀어라.",
+      "expected_answer": "[-2, 2]",
+      "solution": "",
+      "verdict": "ERROR",
+      "justification": "'HumanMessage' object is not subscriptable",
+      "response": "ERROR: 'HumanMessage' object is not subscriptable",
+      "time_ms": 0,
+      "time_sec": 0
+    }
+  ],
+  "summary": {
+    "react_avg_time_ms": 0,
+    "multi_agent_avg_time_ms": 0,
+    "total_problems": 3
+  }
+}
