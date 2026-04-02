@@ -578,5 +578,22 @@ OPENAI_MODEL= Claude Sonnet 4.5
 
 ---
 
+### 참고
+
+# ReAct 에이전트
+
+temperature = 0.0 ← 항상 동일한 답 (수학이니까 정확성 중요)
+
+# Generator 에이전트
+
+temperature = 0.7 ← 약간 창의적 (다양한 풀이 방식 시도)
+
+# Verifier 에이전트
+
+temperature = 0.0 ← 항상 동일한 판정 (검증은 일관성 중요)
+
+수학 문제는 정답이 하나이므로 ReAct랑 Verifier는 0.0으로 고정.
+Generator만 0.7로 높인 이유는 다양한 풀이 방식을 시도해보기 위함.
+
 **보고서 작성일**: 2026년 4월 2일  
 **작성자**: 이동민
