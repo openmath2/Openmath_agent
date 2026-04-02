@@ -2,9 +2,10 @@
 
 import os
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage
+import operator
+from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph import StateGraph, END
-from typing import TypedDict, Literal
+from typing import Annotated, TypedDict, Literal
 
 from .generator_agent import build_generator_agent, GeneratorState
 from .verifier_agent import build_verifier_agent, VerifierState
@@ -20,6 +21,7 @@ class MultiAgentState(TypedDict):
     verdict: str
     justification: str
     attempt: int
+    messages: Annotated[list[BaseMessage], operator.add]
 
 
 def route_after_verify(state: MultiAgentState) -> Literal["generate", "__end__"]:
@@ -56,11 +58,13 @@ def build_multi_agent_graph(model: str | None = None):
 
     graph = StateGraph(MultiAgentState)
 
-    def generator_node(state: MultiAgentState) -> MultiAgentState:
+    def generator_node(state: MultiAgentState) -> dict:
         """Invoke generator agent to create a solution."""
+        problem_statement = state['messages'][-1]['content']
+
         # Prepare generator input
         gen_input: GeneratorState = {
-            "problem": state["problem"],
+            "problem": problem_statement,
             "solution_candidate": "",
             "reasoning_steps": []
         }
@@ -70,15 +74,16 @@ def build_multi_agent_graph(model: str | None = None):
         
         # Update state with generator output
         return {
-            "problem": state["problem"],
+            "problem": problem_statement,
             "solution_candidate": gen_result["solution_candidate"],
             "reasoning_steps": gen_result["reasoning_steps"],
-            "verdict": state.get("verdict", ""),
-            "justification": state.get("justification", ""),
-            "attempt": state.get("attempt", 0) + 1
+            "verdict": "",
+            "justification": "",
+            "attempt": state.get("attempt", 0) + 1,
+            "messages": [HumanMessage(content=f"Generated solution candidate:\n{gen_result['solution_candidate']}")]
         }
 
-    def verifier_node(state: MultiAgentState) -> MultiAgentState:
+    def verifier_node(state: MultiAgentState) -> dict:
         """Invoke verifier agent to check the solution."""
         # Prepare verifier input
         ver_input: VerifierState = {
@@ -91,14 +96,15 @@ def build_multi_agent_graph(model: str | None = None):
         # Invoke verifier
         ver_result = verifier.invoke(ver_input)
         
+        verification_message = HumanMessage(
+            content=f"Verdict: {ver_result['verdict']}\nJustification: {ver_result['justification']}"
+        )
+
         # Update state with verifier output
         return {
-            "problem": state["problem"],
-            "solution_candidate": state["solution_candidate"],
-            "reasoning_steps": state["reasoning_steps"],
             "verdict": ver_result["verdict"],
             "justification": ver_result["justification"],
-            "attempt": state["attempt"]
+            "messages": [verification_message]
         }
 
     # Add nodes
